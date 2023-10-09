@@ -35,11 +35,10 @@ export default function Home() {
       async function getBalance() {
         try {
 
-          // connect to columbus-5 terra classic network
           const terra = new LCDClient({
             URL: 'https://columbus-lcd.terra.dev',
             chainID: 'columbus-5',
-            isClassic: true  // *set to true to connect terra-classic chain*
+            isClassic: true
           });
 
           const balance = await terra.bank.balance('terra162xv4hyl3nz66lakj0dmnczcjmjmrkdpqf7jw0');
