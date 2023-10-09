@@ -1,4 +1,8 @@
+import React, { useState, useEffect } from 'react';
+import { LCDClient, Coin } from '@terra-money/terra.js';
+
 import Head from 'next/head';
+
 import {
   SimpleGrid,
   VStack,
@@ -15,11 +19,50 @@ import {
   useColorMode,
   useColorModeValue
 } from '@chakra-ui/react';
+
 import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
+
 import { WalletSection } from '../components';
 
 export default function Home() {
+  
   const { colorMode, toggleColorMode } = useColorMode();
+
+  useEffect(() => {
+
+      console.log('---------should execute only once, max twice');
+
+      async function getBalance() {
+        try {
+
+          // connect to columbus-5 terra classic network
+          const terra = new LCDClient({
+            URL: 'https://columbus-lcd.terra.dev',
+            chainID: 'columbus-5',
+            isClassic: true  // *set to true to connect terra-classic chain*
+          });
+
+          const balance = await terra.bank.balance('terra162xv4hyl3nz66lakj0dmnczcjmjmrkdpqf7jw0');
+          // console.log(balance);
+
+          console.log(JSON.stringify(balance, null, 4));
+
+          return balance;
+
+        } catch (error) {
+          if (error) {
+            console.log('error message: ', error);
+            return error;
+          } else {
+            console.log('unexpected error: ', error);
+            return 'An unexpected error occurred';
+          }
+        }
+      }
+      getBalance();
+
+      return;
+  }, []);
 
   return (
       <VStack spacing={4} align='stretch'>
