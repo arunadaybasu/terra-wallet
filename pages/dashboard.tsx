@@ -3,21 +3,15 @@ import { LCDClient, Coin } from '@terra-money/terra.js';
 
 import Head from 'next/head';
 
+import { useChain, useManager } from '@cosmos-kit/react';
+import { chainName } from '../config';
 import {
-  SimpleGrid,
-  VStack,
-  Box,
-  Divider,
-  Grid,
-  Heading,
-  Text,
-  Stack,
-  Link,
+  useColorMode, useColorModeValue,
+  Grid, SimpleGrid, VStack, Flex, Box, Stack,
+  Heading, Divider, StackDivider, Icon,
+  Text, Link,
   Button,
-  Flex,
-  Icon,
-  useColorMode,
-  useColorModeValue
+  Card, CardHeader, CardBody, CardFooter,
 } from '@chakra-ui/react';
 
 import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
@@ -25,14 +19,54 @@ import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
 import { WalletSection } from '../components';
 
 export default function Home() {
-  
+  const {
+    connect,
+    openView,
+    status,
+    username,
+    address,
+    message,
+    wallet,
+    chain: chainInfo,
+  } = useChain(chainName);
+  const { getChainLogo } = useManager();
+
   const { colorMode, toggleColorMode } = useColorMode();
+
+  const [govProps, setGovProps] = useState(null);
 
   useEffect(() => {
 
-      console.log('---------should execute only once, max twice');
+      console.log(address);
 
-      async function getBalance() {
+      // async function getBalance() {
+      //   try {
+
+      //     const terra = new LCDClient({
+      //       URL: 'https://columbus-lcd.terra.dev',
+      //       chainID: 'columbus-5',
+      //       isClassic: true
+      //     });
+
+      //     const balance = await terra.bank.balance('terra162xv4hyl3nz66lakj0dmnczcjmjmrkdpqf7jw0');
+      //     // console.log(balance);
+      //     console.log(JSON.stringify(balance));
+
+      //     return balance;
+
+      //   } catch (error) {
+      //     if (error) {
+      //       console.log('error message: ', error);
+      //       return error;
+      //     } else {
+      //       console.log('unexpected error: ', error);
+      //       return 'An unexpected error occurred';
+      //     }
+      //   }
+      // }
+      // getBalance();
+
+      async function getProposals() {
         try {
 
           const terra = new LCDClient({
@@ -41,12 +75,14 @@ export default function Home() {
             isClassic: true
           });
 
-          const balance = await terra.bank.balance('terra162xv4hyl3nz66lakj0dmnczcjmjmrkdpqf7jw0');
-          // console.log(balance);
+          const govProposals = await terra.gov.proposals();
+          setGovProps(govProposals);
 
-          console.log(JSON.stringify(balance, null, 4));
+          console.log(govProposals[0][0]);
+          // console.log(govProposals[0][5].content.description);
+          
 
-          return balance;
+          return govProposals;
 
         } catch (error) {
           if (error) {
@@ -58,7 +94,7 @@ export default function Home() {
           }
         }
       }
-      getBalance();
+      getProposals();
 
       return;
   }, []);
@@ -91,7 +127,45 @@ export default function Home() {
         </SimpleGrid>
 
         <Box textAlign="center">
+
+          <Button colorScheme='blue'>Show All Proposals</Button>
+
         </Box>
+
+        <SimpleGrid columns={4} spacing={10}>
+
+          {govProps && govProps[0].map(function(govProp) {
+            return (
+              <Card key={govProp.id}>
+                <CardHeader>
+                  <Heading size='md'>Prop #{govProp.id}</Heading>
+                </CardHeader>
+
+                <CardBody>
+                  <Stack divider={<StackDivider />} spacing='4'>
+                    <Box>
+                      <Heading size='xs' textTransform='uppercase'>
+                        Title
+                      </Heading>
+                      <Text pt='2' fontSize='sm'>
+                        {govProp.content.title}
+                      </Text>
+                    </Box>
+                    <Box>
+                      <Heading size='xs' textTransform='uppercase'>
+                        Status
+                      </Heading>
+                      <Text pt='2' fontSize='sm'>
+                        {govProp.status}
+                      </Text>
+                    </Box>
+                  </Stack>
+                </CardBody>
+              </Card>
+            )
+          })}
+
+        </SimpleGrid>
 
         <Box mb={3}>
           <Divider />
