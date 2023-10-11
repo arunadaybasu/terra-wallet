@@ -20,7 +20,23 @@ import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
 import { WalletSection } from '../../components';
 
 export default function Home() {
-  const [govProp, setGovProp] = useState(null);
+  const [govProp, setGovProp] = useState({
+    content: {title: '', description: ''},
+    deposit_end_time: '',
+    final_tally_result: 
+    {
+      yes: '',
+      no: '',
+      abstain: '',
+      no_with_veto: ''
+    },
+    id: '',
+    status: '',
+    submit_time: '',
+    total_deposit: {_coins: {uluna: ''}},
+    voting_end_time: '',
+    voting_start_time: ''
+  });
 
   const { colorMode, toggleColorMode } = useColorMode();
   const {
