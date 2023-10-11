@@ -54,44 +54,55 @@ export default function Home() {
   const router = useRouter();
   const propId = router.query.id;
 
-  useEffect(() => {
+  function getProposalTimes(propTemp) {
 
-      async function getProposal(propIdTemp) {
+    const dateTemp = new Date(propTemp.deposit_end_time);
+    console.log(dateTemp.toDateString(), dateTemp.toLocaleString(), dateTemp.toUTCString(), dateTemp.toTimeString());
 
-        console.log(propIdTemp);
+  }
 
-        if (propIdTemp != undefined)
-        {
+  async function getProposal(propIdTemp) {
 
-          try {
+    console.log(propIdTemp);
 
-            const terra = new LCDClient({
-              URL: 'https://columbus-lcd.terra.dev',
-              chainID: 'columbus-5',
-              isClassic: true
-            });
+    if (propIdTemp != undefined)
+    {
 
-            const govProposal = await terra.gov.proposal(propIdTemp, {});
-            setGovProp(govProposal);
-            console.log(govProposal);
+      try {
 
-            return;
+        const terra = new LCDClient({
+          URL: 'https://columbus-lcd.terra.dev',
+          chainID: 'columbus-5',
+          isClassic: true
+        });
 
-          } catch (error) {
-            if (error) {
-              console.log('error message: ', error);
-              return error;
-            } else {
-              console.log('unexpected error: ', error);
-              return 'An unexpected error occurred';
-            }
-          }
+        const govProposal = await terra.gov.proposal(propIdTemp, {});
+        setGovProp(govProposal);
+        getProposalTimes(govProposal);
 
-        }
+        const govProposalTemp = govProposal.toJSON();
+        console.log(govProposalTemp.split(':')[2].split('"')[1].split('.')[3]);
 
         return;
 
+      } catch (error) {
+        if (error) {
+          console.log('error message: ', error);
+          return error;
+        } else {
+          console.log('unexpected error: ', error);
+          return 'An unexpected error occurred';
+        }
       }
+
+    }
+
+    return;
+
+  }
+
+  useEffect(() => {
+
       console.log(propId);
       getProposal(propId);
 
