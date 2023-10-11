@@ -22,6 +22,8 @@ import { WalletSection } from '../components';
 export default function Home() {
   const [govProps, setGovProps] = useState(null);
   const [govPropsOnly, setGovPropsOnly] = useState(null);
+  const [nextKey, setNextKey] = useState('');
+  const [totalProps, setTotalProps] = useState('');
 
   const propStatus = [
     'Unknown',
@@ -62,76 +64,90 @@ export default function Home() {
     };
   }
 
+  async function getProposals() {
+    try {
+
+      const terra = new LCDClient({
+        URL: 'https://columbus-lcd.terra.dev',
+        chainID: 'columbus-5',
+        isClassic: true
+      });
+
+      const paginationOptions = {
+        'pagination.limit': '20',
+        'pagination.offset': '0',
+        'pagination.key': '',
+        'pagination.count_total': 'true',
+        'pagination.reverse': 'true'
+      };
+
+      const govProposals = await terra.gov.proposals(paginationOptions);
+      setGovProps(govProposals);
+
+      const proposalsOnly = govProposals[0];
+      setGovPropsOnly(proposalsOnly);
+
+      console.log(govProposals[1].next_key, govProposals[1].total);
+      setNextKey(govProposals[1].next_key);
+      setTotalProps(govProposals[1].total);
+
+      return govProposals;
+
+    } catch (error) {
+      if (error) {
+        console.log('error message: ', error);
+        return error;
+      } else {
+        console.log('unexpected error: ', error);
+        return 'An unexpected error occurred';
+      }
+    }
+  }
+
+  async function loadMoreProposals() {
+    try {
+
+      const terra = new LCDClient({
+        URL: 'https://columbus-lcd.terra.dev',
+        chainID: 'columbus-5',
+        isClassic: true
+      });
+
+      const paginationOptions = {
+        'pagination.limit': '20',
+        'pagination.offset': '0',
+        'pagination.key': nextKey,
+        'pagination.count_total': 'true',
+        'pagination.reverse': 'true'
+      };
+
+      const govProposals = await terra.gov.proposals(paginationOptions);
+      setGovProps(govProposals);
+      console.log(govProposals);
+
+      const proposalsOnly = govProposals[0];
+      setGovPropsOnly(proposalsOnly);
+
+      console.log(govProposals[1].next_key, govProposals[1].total);
+      setNextKey(govProposals[1].next_key);
+
+      return govProposals;
+
+    } catch (error) {
+      if (error) {
+        console.log('error message: ', error);
+        return error;
+      } else {
+        console.log('unexpected error: ', error);
+        return 'An unexpected error occurred';
+      }
+    }
+  }
+
   useEffect(() => {
 
       console.log(address);
-
-      // async function getBalance() {
-      //   try {
-
-      //     const terra = new LCDClient({
-      //       URL: 'https://columbus-lcd.terra.dev',
-      //       chainID: 'columbus-5',
-      //       isClassic: true
-      //     });
-
-      //     const balance = await terra.bank.balance('terra162xv4hyl3nz66lakj0dmnczcjmjmrkdpqf7jw0');
-      //     // console.log(balance);
-      //     console.log(JSON.stringify(balance));
-
-      //     return balance;
-
-      //   } catch (error) {
-      //     if (error) {
-      //       console.log('error message: ', error);
-      //       return error;
-      //     } else {
-      //       console.log('unexpected error: ', error);
-      //       return 'An unexpected error occurred';
-      //     }
-      //   }
-      // }
-      // getBalance();
-
-      async function getProposals() {
-        try {
-
-          const terra = new LCDClient({
-            URL: 'https://columbus-lcd.terra.dev',
-            chainID: 'columbus-5',
-            isClassic: true
-          });
-
-          const paginationOptions = {
-            'pagination.limit': '20',
-            'pagination.offset': '0',
-            'pagination.key': '',
-            'pagination.count_total': 'true',
-            'pagination.reverse': 'true'
-          };
-
-          const govProposals = await terra.gov.proposals(paginationOptions);
-          setGovProps(govProposals);
-
-          const proposalsOnly = govProposals[0];
-          setGovPropsOnly(proposalsOnly);
-
-          console.log(govProposals);
-          // console.log(govProposals[0][5].content.description);
-          
-
-          return govProposals;
-
-        } catch (error) {
-          if (error) {
-            console.log('error message: ', error);
-            return error;
-          } else {
-            console.log('unexpected error: ', error);
-            return 'An unexpected error occurred';
-          }
-        }
-      }
+      
       getProposals();
 
       return;
@@ -165,6 +181,10 @@ export default function Home() {
         </SimpleGrid>
 
         <Container maxW="6xl" py={10}>
+
+          <Box textAlign="right">
+            <Button onClick={loadMoreProposals} colorScheme='blue'>Load Older Proposals</Button>
+          </Box>
 
           <Tabs>
             <TabList>
@@ -329,10 +349,6 @@ export default function Home() {
               </TabPanel>
             </TabPanels>
           </Tabs>
-
-          <Box textAlign="center">
-            <Button colorScheme='blue'>Load More Proposals</Button>
-          </Box>
 
         </Container>
 
