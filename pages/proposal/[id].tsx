@@ -20,6 +20,8 @@ import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
 import { WalletSection } from '../../components';
 
 export default function Home() {
+  const [govProp, setGovProp] = useState(null);
+
   const { colorMode, toggleColorMode } = useColorMode();
   const {
     connect,
@@ -35,88 +37,50 @@ export default function Home() {
 
   const router = useRouter();
   const propId = router.query.id;
-  
-  const [govProp, setGovProp] = useState(null);
-  const [govPropOnly, setGovPropOnly] = useState(null);
-  // const [propId, setPropId] = useState(router.query.id);
-
-  async function getProposal() {
-    try {
-
-      const terra = new LCDClient({
-        URL: 'https://columbus-lcd.terra.dev',
-        chainID: 'columbus-5',
-        isClassic: true
-      });
-
-      // const paginationOptions = {
-      //   'pagination.limit': '20',
-      //   'pagination.offset': '0',
-      //   'pagination.key': '',
-      //   'pagination.count_total': 'true',
-      //   'pagination.reverse': 'true'
-      // };
-      console.log(propId);
-      const params = {
-        'proposalId': propId
-      }
-
-      // const govProposal = await terra.gov.proposal(params);
-      // setGovProp(govProposal);
-
-      // const proposalOnly = govProposal[0];
-      // setGovPropOnly(proposalOnly);
-
-      // console.log(govProposal);
-
-      // return govProposal;
-
-    } catch (error) {
-      if (error) {
-        console.log('error message: ', error);
-        return error;
-      } else {
-        console.log('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
-    }
-  }
 
   useEffect(() => {
 
-      // console.log(propId);
+      async function getProposal(propIdTemp) {
 
-      // async function getBalance() {
-      //   try {
+        console.log(propIdTemp);
 
-      //     const terra = new LCDClient({
-      //       URL: 'https://columbus-lcd.terra.dev',
-      //       chainID: 'columbus-5',
-      //       isClassic: true
-      //     });
+        if (propIdTemp != undefined)
+        {
 
-      //     const balance = await terra.bank.balance('terra162xv4hyl3nz66lakj0dmnczcjmjmrkdpqf7jw0');
-      //     // console.log(balance);
-      //     console.log(JSON.stringify(balance));
+          try {
 
-      //     return balance;
+            const terra = new LCDClient({
+              URL: 'https://columbus-lcd.terra.dev',
+              chainID: 'columbus-5',
+              isClassic: true
+            });
 
-      //   } catch (error) {
-      //     if (error) {
-      //       console.log('error message: ', error);
-      //       return error;
-      //     } else {
-      //       console.log('unexpected error: ', error);
-      //       return 'An unexpected error occurred';
-      //     }
-      //   }
-      // }
-      // getBalance();
+            const govProposal = await terra.gov.proposal(propIdTemp, {});
+            setGovProp(govProposal);
+            console.log(govProposal);
 
-      getProposal();
+            return;
+
+          } catch (error) {
+            if (error) {
+              console.log('error message: ', error);
+              return error;
+            } else {
+              console.log('unexpected error: ', error);
+              return 'An unexpected error occurred';
+            }
+          }
+
+        }
+
+        return;
+
+      }
+      console.log(propId);
+      getProposal(propId);
 
       return;
-  }, []);
+  }, [propId]);
 
   return (
       <VStack spacing={4} align='stretch'>
@@ -147,49 +111,26 @@ export default function Home() {
 
         <Container maxW="5xl" py={10}>
 
-          <SimpleGrid columns={4} spacing={10}>
-            {/*govPropsOnly && govPropsOnly.map(function(govProp) {
-              return (
-                <Card key={govProp.id}>
-                  <CardHeader>
-                    <Heading size='md'>Prop #{govProp.id}</Heading>
-                  </CardHeader>
-
-                  <CardBody>
-                    <Stack divider={<StackDivider />} spacing='4'>
-                      <Box>
-                        <Heading size='xs' textTransform='uppercase'>
-                          Title
-                        </Heading>
-                        <Text pt='2' fontSize='sm'>
-                          {govProp.content.title}
-                        </Text>
-                      </Box>
-                      <Box>
-                        <Heading size='xs' textTransform='uppercase'>
-                          Status
-                        </Heading>
-                        <Text pt='2' fontSize='sm'>
-                          {govProp.status}
-                        </Text>
-                      </Box>
-                    </Stack>
-                  </CardBody>
-                </Card>
-              )
-            })*/}
+          <SimpleGrid columns={2} spacing={10}>
+            <Box textAlign="left">
+              <Text fontSize='3xl'>
+                Proposal No. #{govProp.id}
+              </Text>
+              <Text fontSize='2xl'>
+                {govProp.content.title}
+              </Text>
+              <Text fontSize='lg'>
+                {govProp.content.description}
+              </Text>
+            </Box>
+            <Box textAlign="center">
+              <Button colorScheme='blue'>Vote Now</Button>
+            </Box>            
           </SimpleGrid>
-
-          <Box textAlign="center">
-            <Button colorScheme='blue'>Load More Proposals</Button>
-          </Box>
 
         </Container>
 
         <Box mb={3}>
-          <Text pt='2' fontSize='sm'>
-            {propId}
-          </Text>
           <Divider />
         </Box>
 
