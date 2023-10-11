@@ -11,7 +11,7 @@ import {
   Heading, Divider, StackDivider, Icon,
   Text, Link,
   Button,
-  Card, CardHeader, CardBody, CardFooter,
+  Tabs, TabList, TabPanels, Tab, TabPanel
 } from '@chakra-ui/react';
 import { LinkIcon } from '@chakra-ui/icons';
 
@@ -24,12 +24,12 @@ export default function Home() {
   const [govPropsOnly, setGovPropsOnly] = useState(null);
 
   const propStatus = [
-    'UNSPECIFIED',
-    'DEPOSIT PERIOD',
-    'VOTING PERIOD',
-    'PASSED',
-    'REJECTED',
-    'FAILED'
+    'Unknown',
+    'Depositing',
+    'Voting',
+    'Accepted',
+    'Declined',
+    'Disallowed'
   ];
 
   const {
@@ -166,28 +166,169 @@ export default function Home() {
 
         <Container maxW="6xl" py={10}>
 
-          <SimpleGrid columns={3} spacing={10}>
-            {govPropsOnly && govPropsOnly.map(function(govProp) {
-              return (
-                <Link key={govProp.id} href={"/proposal/" + govProp.id} _hover={{ textDecoration: 'none' }}>
-                  <Stack
-                    h="full"
-                    minH={36}
-                    p={5}
-                    spacing={2.5}
-                    justifyContent="center"
-                    borderRadius={5}
-                    boxShadow={getBoxShadow}
-                    _hover={getBoxShadowHover}
-                  >
-                    <Heading noOfLines={2} fontSize="xl">{govProp.content.title}&ensp;&rarr;</Heading>
-                    <Text>{propStatus[govProp.status]}</Text>
-                    <Text noOfLines={5}>{govProp.content.description}</Text>
-                  </Stack>
-                </Link>
-              )
-            })}
-          </SimpleGrid>
+          <Tabs>
+            <TabList>
+              <Tab key="propTab1">Depositing</Tab>
+              <Tab key="propTab2">Voting</Tab>
+              <Tab key="propTab3">Accepted</Tab>
+              <Tab key="propTab4">Declined</Tab>
+              <Tab key="propTab5">Disallowed</Tab>
+              <Tab key="propTab0">Unknown</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel>
+                <SimpleGrid columns={3} spacing={10}>
+                  {govPropsOnly && govPropsOnly.map(function(govProp) {
+                    if (govProp.status == '1')
+                      return (
+                        <Link key={govProp.id} href={"/proposal/" + govProp.id} _hover={{ textDecoration: 'none' }}>
+                          <Stack
+                            h="full"
+                            minH={36}
+                            p={5}
+                            spacing={2.5}
+                            justifyContent="center"
+                            borderRadius={5}
+                            boxShadow={getBoxShadow}
+                            _hover={getBoxShadowHover}
+                          >
+                            <Heading noOfLines={2} fontSize="xl">{govProp.content.title}&ensp;&rarr;</Heading>
+                            <Text>{propStatus[govProp.status]}</Text>
+                            <Text noOfLines={5}>{govProp.content.description}</Text>
+                          </Stack>
+                        </Link>
+                      )
+                  })}
+                </SimpleGrid>
+              </TabPanel>
+              <TabPanel>
+                <SimpleGrid columns={3} spacing={10}>
+                  {govPropsOnly && govPropsOnly.map(function(govProp) {
+                    if (govProp.status == '2')
+                      return (
+                        <Link key={govProp.id} href={"/proposal/" + govProp.id} _hover={{ textDecoration: 'none' }}>
+                          <Stack
+                            h="full"
+                            minH={36}
+                            p={5}
+                            spacing={2.5}
+                            justifyContent="center"
+                            borderRadius={5}
+                            boxShadow={getBoxShadow}
+                            _hover={getBoxShadowHover}
+                          >
+                            <Heading noOfLines={2} fontSize="xl">{govProp.content.title}&ensp;&rarr;</Heading>
+                            <Text>{propStatus[govProp.status]}</Text>
+                            <Text noOfLines={5}>{govProp.content.description}</Text>
+                          </Stack>
+                        </Link>
+                      )
+                  })}
+                </SimpleGrid>
+              </TabPanel>
+              <TabPanel>
+                <SimpleGrid columns={3} spacing={10}>
+                  {govPropsOnly && govPropsOnly.map(function(govProp) {
+                    if (govProp.status == '3')
+                      return (
+                        <Link key={govProp.id} href={"/proposal/" + govProp.id} _hover={{ textDecoration: 'none' }}>
+                          <Stack
+                            h="full"
+                            minH={36}
+                            p={5}
+                            spacing={2.5}
+                            justifyContent="center"
+                            borderRadius={5}
+                            boxShadow={getBoxShadow}
+                            _hover={getBoxShadowHover}
+                          >
+                            <Heading noOfLines={2} fontSize="xl">{govProp.content.title}&ensp;&rarr;</Heading>
+                            <Text>{propStatus[govProp.status]}</Text>
+                            <Text noOfLines={5}>{govProp.content.description}</Text>
+                          </Stack>
+                        </Link>
+                      )
+                  })}
+                </SimpleGrid>
+              </TabPanel>
+              <TabPanel>
+                <SimpleGrid columns={3} spacing={10}>
+                  {govPropsOnly && govPropsOnly.map(function(govProp) {
+                    if (govProp.status == '4')
+                      return (
+                        <Link key={govProp.id} href={"/proposal/" + govProp.id} _hover={{ textDecoration: 'none' }}>
+                          <Stack
+                            h="full"
+                            minH={36}
+                            p={5}
+                            spacing={2.5}
+                            justifyContent="center"
+                            borderRadius={5}
+                            boxShadow={getBoxShadow}
+                            _hover={getBoxShadowHover}
+                          >
+                            <Heading noOfLines={2} fontSize="xl">{govProp.content.title}&ensp;&rarr;</Heading>
+                            <Text>{propStatus[govProp.status]}</Text>
+                            <Text noOfLines={5}>{govProp.content.description}</Text>
+                          </Stack>
+                        </Link>
+                      )
+                  })}
+                </SimpleGrid>
+              </TabPanel>
+              <TabPanel>
+                <SimpleGrid columns={3} spacing={10}>
+                  {govPropsOnly && govPropsOnly.map(function(govProp) {
+                    if (govProp.status == '5')
+                      return (
+                        <Link key={govProp.id} href={"/proposal/" + govProp.id} _hover={{ textDecoration: 'none' }}>
+                          <Stack
+                            h="full"
+                            minH={36}
+                            p={5}
+                            spacing={2.5}
+                            justifyContent="center"
+                            borderRadius={5}
+                            boxShadow={getBoxShadow}
+                            _hover={getBoxShadowHover}
+                          >
+                            <Heading noOfLines={2} fontSize="xl">{govProp.content.title}&ensp;&rarr;</Heading>
+                            <Text>{propStatus[govProp.status]}</Text>
+                            <Text noOfLines={5}>{govProp.content.description}</Text>
+                          </Stack>
+                        </Link>
+                      )
+                  })}
+                </SimpleGrid>
+              </TabPanel>
+              <TabPanel>
+                <SimpleGrid columns={3} spacing={10}>
+                  {govPropsOnly && govPropsOnly.map(function(govProp) {
+                    if (govProp.status == '0')
+                      return (
+                        <Link key={govProp.id} href={"/proposal/" + govProp.id} _hover={{ textDecoration: 'none' }}>
+                          <Stack
+                            h="full"
+                            minH={36}
+                            p={5}
+                            spacing={2.5}
+                            justifyContent="center"
+                            borderRadius={5}
+                            boxShadow={getBoxShadow}
+                            _hover={getBoxShadowHover}
+                          >
+                            <Heading noOfLines={2} fontSize="xl">{govProp.content.title}&ensp;&rarr;</Heading>
+                            <Text>{propStatus[govProp.status]}</Text>
+                            <Text noOfLines={5}>{govProp.content.description}</Text>
+                          </Stack>
+                        </Link>
+                      )
+                  })}
+                </SimpleGrid>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
 
           <Box textAlign="center">
             <Button colorScheme='blue'>Load More Proposals</Button>
