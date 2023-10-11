@@ -32,18 +32,59 @@ export default function Home() {
     chain: chainInfo,
   } = useChain(chainName);
   const { getChainLogo } = useManager();
+
   const router = useRouter();
   const propId = router.query.id;
   
-  const [govProps, setGovProps] = useState(null);
-  const [govPropsOnly, setGovPropsOnly] = useState(null);
+  const [govProp, setGovProp] = useState(null);
+  const [govPropOnly, setGovPropOnly] = useState(null);
   // const [propId, setPropId] = useState(router.query.id);
+
+  async function getProposal() {
+    try {
+
+      const terra = new LCDClient({
+        URL: 'https://columbus-lcd.terra.dev',
+        chainID: 'columbus-5',
+        isClassic: true
+      });
+
+      // const paginationOptions = {
+      //   'pagination.limit': '20',
+      //   'pagination.offset': '0',
+      //   'pagination.key': '',
+      //   'pagination.count_total': 'true',
+      //   'pagination.reverse': 'true'
+      // };
+      console.log(propId);
+      const params = {
+        'proposalId': propId
+      }
+
+      // const govProposal = await terra.gov.proposal(params);
+      // setGovProp(govProposal);
+
+      // const proposalOnly = govProposal[0];
+      // setGovPropOnly(proposalOnly);
+
+      // console.log(govProposal);
+
+      // return govProposal;
+
+    } catch (error) {
+      if (error) {
+        console.log('error message: ', error);
+        return error;
+      } else {
+        console.log('unexpected error: ', error);
+        return 'An unexpected error occurred';
+      }
+    }
+  }
 
   useEffect(() => {
 
-      // if (propId) return;
-      // else setPropId(router.query.id);
-      console.log(propId);
+      // console.log(propId);
 
       // async function getBalance() {
       //   try {
@@ -72,46 +113,7 @@ export default function Home() {
       // }
       // getBalance();
 
-      // async function getProposals() {
-      //   try {
-
-      //     const terra = new LCDClient({
-      //       URL: 'https://columbus-lcd.terra.dev',
-      //       chainID: 'columbus-5',
-      //       isClassic: true
-      //     });
-
-      //     const paginationOptions = {
-      //       'pagination.limit': '20',
-      //       'pagination.offset': '0',
-      //       'pagination.key': '',
-      //       'pagination.count_total': 'true',
-      //       'pagination.reverse': 'true'
-      //     };
-
-      //     const govProposals = await terra.gov.proposals(paginationOptions);
-      //     setGovProps(govProposals);
-
-      //     const proposalsOnly = govProposals[0];
-      //     setGovPropsOnly(proposalsOnly);
-
-      //     console.log(govProposals);
-      //     // console.log(govProposals[0][5].content.description);
-          
-
-      //     return govProposals;
-
-      //   } catch (error) {
-      //     if (error) {
-      //       console.log('error message: ', error);
-      //       return error;
-      //     } else {
-      //       console.log('unexpected error: ', error);
-      //       return 'An unexpected error occurred';
-      //     }
-      //   }
-      // }
-      // getProposals();
+      getProposal();
 
       return;
   }, []);
@@ -146,7 +148,7 @@ export default function Home() {
         <Container maxW="5xl" py={10}>
 
           <SimpleGrid columns={4} spacing={10}>
-            {govPropsOnly && govPropsOnly.map(function(govProp) {
+            {/*govPropsOnly && govPropsOnly.map(function(govProp) {
               return (
                 <Card key={govProp.id}>
                   <CardHeader>
@@ -175,7 +177,7 @@ export default function Home() {
                   </CardBody>
                 </Card>
               )
-            })}
+            })*/}
           </SimpleGrid>
 
           <Box textAlign="center">

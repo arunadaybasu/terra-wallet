@@ -13,12 +13,25 @@ import {
   Button,
   Card, CardHeader, CardBody, CardFooter,
 } from '@chakra-ui/react';
+import { LinkIcon } from '@chakra-ui/icons';
 
 import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
 
 import { WalletSection } from '../components';
 
 export default function Home() {
+  const [govProps, setGovProps] = useState(null);
+  const [govPropsOnly, setGovPropsOnly] = useState(null);
+
+  const propStatus = [
+    'UNSPECIFIED',
+    'DEPOSIT PERIOD',
+    'VOTING PERIOD',
+    'PASSED',
+    'REJECTED',
+    'FAILED'
+  ];
+
   const {
     connect,
     openView,
@@ -30,11 +43,24 @@ export default function Home() {
     chain: chainInfo,
   } = useChain(chainName);
   const { getChainLogo } = useManager();
-
   const { colorMode, toggleColorMode } = useColorMode();
 
-  const [govProps, setGovProps] = useState(null);
-  const [govPropsOnly, setGovPropsOnly] = useState(null);
+  function getBoxShadow() {
+    return useColorModeValue(
+      '0 2px 5px #ccc',
+      '0 1px 3px #727272, 0 2px 12px -2px #2f2f2f'
+    );
+  }
+
+  function getBoxShadowHover() {
+    return {
+      color: useColorModeValue('purple.600', 'purple.300'),
+      boxShadow: useColorModeValue(
+        '0 2px 5px #bca5e9',
+        '0 0 3px rgba(150, 75, 213, 0.8), 0 3px 8px -2px rgba(175, 89, 246, 0.9)'
+      )
+    };
+  }
 
   useEffect(() => {
 
@@ -138,37 +164,27 @@ export default function Home() {
           
         </SimpleGrid>
 
-        <Container maxW="5xl" py={10}>
+        <Container maxW="6xl" py={10}>
 
-          <SimpleGrid columns={4} spacing={10}>
+          <SimpleGrid columns={3} spacing={10}>
             {govPropsOnly && govPropsOnly.map(function(govProp) {
               return (
-                <Card key={govProp.id}>
-                  <CardHeader>
-                    <Heading size='md'>Prop #{govProp.id}</Heading>
-                  </CardHeader>
-
-                  <CardBody>
-                    <Stack divider={<StackDivider />} spacing='4'>
-                      <Box>
-                        <Heading size='xs' textTransform='uppercase'>
-                          Title
-                        </Heading>
-                        <Text pt='2' fontSize='sm'>
-                          {govProp.content.title}
-                        </Text>
-                      </Box>
-                      <Box>
-                        <Heading size='xs' textTransform='uppercase'>
-                          Status
-                        </Heading>
-                        <Text pt='2' fontSize='sm'>
-                          {govProp.status}
-                        </Text>
-                      </Box>
-                    </Stack>
-                  </CardBody>
-                </Card>
+                <Link key={govProp.id} href={"/proposal/" + govProp.id} _hover={{ textDecoration: 'none' }}>
+                  <Stack
+                    h="full"
+                    minH={36}
+                    p={5}
+                    spacing={2.5}
+                    justifyContent="center"
+                    borderRadius={5}
+                    boxShadow={getBoxShadow}
+                    _hover={getBoxShadowHover}
+                  >
+                    <Heading noOfLines={2} fontSize="xl">{govProp.content.title}&ensp;&rarr;</Heading>
+                    <Text>{propStatus[govProp.status]}</Text>
+                    <Text noOfLines={5}>{govProp.content.description}</Text>
+                  </Stack>
+                </Link>
               )
             })}
           </SimpleGrid>
