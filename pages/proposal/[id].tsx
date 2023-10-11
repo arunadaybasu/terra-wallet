@@ -38,6 +38,21 @@ export default function Home() {
     voting_start_time: ''
   });
 
+  const propStatus = [
+    'Unknown',
+    'Depositing',
+    'Voting',
+    'Accepted',
+    'Declined',
+    'Disallowed'
+  ];
+  const propTypes = {
+    'TextProposal': 'Text - does not need a Community Pool; generally used as a signalling proposal',
+    'CommunityPoolSpendProposal': 'Community Pool Spend - the Community Pool will be deducted for the mentioned amount; proposers generally discuss proposals on a discussion forum before a Community Pool spend',
+    'ParameterChangeProposal': 'Parameter Change - this proposal will change paramaters on the blockchain; proposers generally discuss proposals on a discussion forum before effecting a parameter change',
+    'SoftwareUpgradeProposal': 'Software Upgrade - this proposal will upgrade the current software version(s) of the blockchain; proposers generally discuss proposals on a discussion forum before effecting a blockchain software upgrade',
+  };
+
   const { colorMode, toggleColorMode } = useColorMode();
   const {
     connect,
@@ -81,7 +96,8 @@ export default function Home() {
         getProposalTimes(govProposal);
 
         const govProposalTemp = govProposal.toJSON();
-        console.log(govProposalTemp.split(':')[2].split('"')[1].split('.')[3]);
+        const propTypeTemp = govProposalTemp.split(':')[2].split('"')[1].split('.')[3];
+        console.log(propTypes[propTypeTemp]);
 
         return;
 
@@ -137,6 +153,12 @@ export default function Home() {
         </SimpleGrid>
 
         <Container maxW="5xl" py={10}>
+        
+          <Box textAlign="left">
+            <Link href="/proposals" _hover={{ textDecoration: 'none' }}>
+              <Button colorScheme='blue'>Back</Button>
+            </Link>
+          </Box>
 
           <SimpleGrid columns={2} spacing={10}>
             <Box textAlign="left">
