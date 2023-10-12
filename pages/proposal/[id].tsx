@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 
 import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
+import Countdown from "react-countdown";
 
 import { WalletSection } from '../../components';
 
@@ -69,6 +70,14 @@ export default function Home() {
   const router = useRouter();
   const propId = router.query.id;
 
+  const Completionist = () => {
+
+    return (
+      <Text>Voting is Complete</Text>
+    );
+
+  }
+
   function getProposalTimes(propTemp) {
 
     const dateTemp = new Date(propTemp.deposit_end_time);
@@ -94,10 +103,35 @@ export default function Home() {
         const govProposal = await terra.gov.proposal(propIdTemp, {});
         setGovProp(govProposal);
         getProposalTimes(govProposal);
+        console.log(govProposal);
 
-        const govProposalTemp = govProposal.toJSON();
-        const propTypeTemp = govProposalTemp.split(':')[2].split('"')[1].split('.')[3];
-        console.log(propTypes[propTypeTemp]);
+        // const govProposalTemp = govProposal.toJSON();
+        // const propTypeTemp = govProposalTemp.split(':')[2].split('"')[1].split('.')[3];
+        // console.log('Proposal Type: ' + propTypes[propTypeTemp]);
+
+        // const voteAbstain = govProposal.final_tally_result.abstain;
+        // console.log('Abstain: ' + voteAbstain);
+        // const voteNo = govProposal.final_tally_result.no;
+        // console.log('No: ' + voteNo);
+        // const voteNoVeto = govProposal.final_tally_result.no_with_veto;
+        // console.log('No with Veto: ' + voteNoVeto);
+        // const voteYes = govProposal.final_tally_result.yes;
+        // console.log('Yes: ' + voteYes);
+
+        // const voteTotal = parseInt(voteAbstain) + parseInt(voteNo) + parseInt(voteNoVeto) + parseInt(voteYes);
+        // console.log('Total: ' + voteTotal);
+
+        // const voteAbstainPercent = ((parseInt(voteAbstain) / voteTotal) * 100);
+        // console.log('Abstain %: ' + voteAbstainPercent);
+        // const voteNoPercent = ((parseInt(voteNo) / voteTotal) * 100);
+        // console.log('No %: ' + voteNoPercent);
+        // const voteNoVetoPercent = ((parseInt(voteNoVeto) / voteTotal) * 100);
+        // console.log('No with Veto %: ' + voteNoVetoPercent);
+        // const voteYesPercent = ((parseInt(voteYes) / voteTotal) * 100);
+        // console.log('Yes %: ' + voteYesPercent);
+
+        const govPropTallyParams = await terra.gov.tallyParameters(propIdTemp, {});
+        console.log(govPropTallyParams.quorum.toFixed(), govPropTallyParams.threshold.toFixed(), govPropTallyParams.veto_threshold.toFixed());
 
         return;
 
@@ -153,7 +187,7 @@ export default function Home() {
         </SimpleGrid>
 
         <Container maxW="5xl" py={10}>
-        
+
           <Box textAlign="left">
             <Link href="/proposals" _hover={{ textDecoration: 'none' }}>
               <Button colorScheme='blue'>Back</Button>
@@ -161,20 +195,32 @@ export default function Home() {
           </Box>
 
           <SimpleGrid columns={2} spacing={10}>
+
             <Box textAlign="left">
+
               <Text fontSize='3xl'>
                 Proposal No. #{govProp.id}
               </Text>
+
               <Text fontSize='2xl'>
                 {govProp.content.title}
               </Text>
+
               <Text fontSize='lg'>
                 {govProp.content.description}
               </Text>
+
             </Box>
+
             <Box textAlign="center">
+
+              <Countdown date={Date.now() + 500000000}>
+                <Completionist />
+              </Countdown>
               <Button colorScheme='blue'>Vote Now</Button>
-            </Box>            
+
+            </Box>
+
           </SimpleGrid>
 
         </Container>
