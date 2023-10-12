@@ -70,13 +70,15 @@ export const ConnectedShowAddress = ({
   const { hasCopied, onCopy } = useClipboard(address ? address : '');
   const [displayAddress, setDisplayAddress] = useState('');
   const { colorMode } = useColorMode();
-  const defaultMaxLength = {
-    lg: 14,
-    md: 16,
-    sm: 18,
-  };
 
   useEffect(() => {
+
+    const defaultMaxLength = {
+      lg: 14,
+      md: 16,
+      sm: 18,
+    };
+
     if (!address) setDisplayAddress('address not identified yet');
     if (address && maxDisplayLength)
       setDisplayAddress(stringTruncateFromCenter(address, maxDisplayLength));
@@ -87,7 +89,8 @@ export const ConnectedShowAddress = ({
           defaultMaxLength[size as keyof typeof defaultMaxLength]
         )
       );
-  }, [address]);
+
+  }, [address, maxDisplayLength, size]);
 
   return (
     <Button

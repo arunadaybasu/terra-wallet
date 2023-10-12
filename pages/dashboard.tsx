@@ -109,7 +109,7 @@ export default function Home() {
       getProposals();
 
       return;
-  }, []);
+  }, [address]);
 
   return (
       <VStack spacing={4} align='stretch'>

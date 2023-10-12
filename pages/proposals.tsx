@@ -20,10 +20,23 @@ import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
 import { WalletSection } from '../components';
 
 export default function Home() {
+
   const [govProps, setGovProps] = useState(null);
   const [govPropsOnly, setGovPropsOnly] = useState(null);
   const [nextKey, setNextKey] = useState('');
   const [totalProps, setTotalProps] = useState('');
+
+  const getBoxShadow = useColorModeValue(
+    '0 2px 5px #ccc',
+    '0 1px 3px #727272, 0 2px 12px -2px #2f2f2f'
+  );
+  const getBoxShadowHover = {
+    color: useColorModeValue('purple.600', 'purple.300'),
+    boxShadow: useColorModeValue(
+      '0 2px 5px #bca5e9',
+      '0 0 3px rgba(150, 75, 213, 0.8), 0 3px 8px -2px rgba(175, 89, 246, 0.9)'
+    )
+  };
 
   const propStatus = [
     'Unknown',
@@ -52,23 +65,6 @@ export default function Home() {
   } = useChain(chainName);
   const { getChainLogo } = useManager();
   const { colorMode, toggleColorMode } = useColorMode();
-
-  function getBoxShadow() {
-    return useColorModeValue(
-      '0 2px 5px #ccc',
-      '0 1px 3px #727272, 0 2px 12px -2px #2f2f2f'
-    );
-  }
-
-  function getBoxShadowHover() {
-    return {
-      color: useColorModeValue('purple.600', 'purple.300'),
-      boxShadow: useColorModeValue(
-        '0 2px 5px #bca5e9',
-        '0 0 3px rgba(150, 75, 213, 0.8), 0 3px 8px -2px rgba(175, 89, 246, 0.9)'
-      )
-    };
-  }
 
   async function getProposals() {
     try {
@@ -157,7 +153,7 @@ export default function Home() {
       getProposals();
 
       return;
-  }, []);
+  }, [address]);
 
   return (
       <VStack spacing={4} align='stretch'>
