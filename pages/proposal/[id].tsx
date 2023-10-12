@@ -40,6 +40,7 @@ export default function Home() {
   });
   const [endDate, setEndDate] = useState('');
   const [endDateLocale, setEndDateLocale] = useState('');
+  const [propType, setPropType] = useState('');
 
   const propStatus = [
     'Unknown',
@@ -56,10 +57,10 @@ export default function Home() {
     'SoftwareUpgradeProposal': 'Software Upgrade Proposal',
   };
   const propTypes = {
-    'TextProposal': 'Text Proposal - does not need a Community Pool; generally used as a signalling proposal',
-    'CommunityPoolSpendProposal': 'Community Pool Spend Proposal - the Community Pool will be deducted for the mentioned amount; proposers generally discuss proposals on a discussion forum before a Community Pool spend',
-    'ParameterChangeProposal': 'Parameter Change Proposal - this proposal will change paramaters on the blockchain; proposers generally discuss proposals on a discussion forum before effecting a parameter change',
-    'SoftwareUpgradeProposal': 'Software Upgrade Proposal - this proposal will upgrade the current software version(s) of the blockchain; proposers generally discuss proposals on a discussion forum before effecting a blockchain software upgrade',
+    'TextProposal': 'Text Proposal: Does not require a Community Pool spend. Generally used as a signalling proposal',
+    'CommunityPoolSpendProposal': 'Community Pool Spend Proposal: The Community Pool will be deducted for the mentioned amount. Proposers generally discuss proposals on a discussion forum before a Community Pool spend',
+    'ParameterChangeProposal': 'Parameter Change Proposal: This proposal will change paramaters on the blockchain. Proposers generally discuss proposals on a discussion forum before effecting a parameter change',
+    'SoftwareUpgradeProposal': 'Software Upgrade Proposal: This proposal will upgrade the current software version(s) of the blockchain. Proposers generally discuss proposals on a discussion forum before effecting a blockchain software upgrade',
   };
 
   const { colorMode, toggleColorMode } = useColorMode();
@@ -181,6 +182,7 @@ export default function Home() {
 
         const govProposalTemp = JSON.stringify(govProposal.content);
         const propTypeTemp = govProposalTemp.split(':')[1].split('.')[3].split('\\')[0];
+        setPropType(propTypes[propTypeTemp]);
         console.log(propTypes[propTypeTemp]);
 
         const voteAbstain = parseFloat(govProposal.final_tally_result.abstain);
@@ -297,10 +299,6 @@ export default function Home() {
 
             <Box textAlign="left">
 
-              <Text fontSize='3xl'>
-                Proposal No. #{govProp.id}
-              </Text>
-
               <Text fontSize='2xl'>
                 {govProp.content.title}
               </Text>
@@ -322,7 +320,13 @@ export default function Home() {
                 borderRadius={5}
                 boxShadow={getBoxShadow}
               >
+
+                <Text fontSize='3xl'>
+                  Proposal No. #{govProp.id}
+                </Text>
                 {endDate}
+                <Text fontSize="sm">{propType}</Text>
+                
               </Stack>
 
             </Box>
