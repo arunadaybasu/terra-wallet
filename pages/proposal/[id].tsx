@@ -38,6 +38,8 @@ export default function Home() {
     voting_end_time: '',
     voting_start_time: ''
   });
+  const [endDate, setEndDate] = useState('');
+  const [endDateLocale, setEndDateLocale] = useState('');
 
   const propStatus = [
     'Unknown',
@@ -73,15 +75,58 @@ export default function Home() {
   const Completionist = () => {
 
     return (
-      <Text>Voting is Complete</Text>
+      <Text fontSize="4xl">Voting has Ended</Text>
     );
 
   }
 
+  function getBoxShadow() {
+    return useColorModeValue(
+      '0 2px 5px #ccc',
+      '0 1px 3px #727272, 0 2px 12px -2px #2f2f2f'
+    );
+  }
+
+  function getBoxShadowHover() {
+    return {
+      color: useColorModeValue('purple.600', 'purple.300'),
+      boxShadow: useColorModeValue(
+        '0 2px 5px #bca5e9',
+        '0 0 3px rgba(150, 75, 213, 0.8), 0 3px 8px -2px rgba(175, 89, 246, 0.9)'
+      )
+    };
+  }
+
   function getProposalTimes(propTemp) {
 
-    const dateTemp = new Date(propTemp.deposit_end_time);
-    console.log(dateTemp.toDateString(), dateTemp.toLocaleString(), dateTemp.toUTCString(), dateTemp.toTimeString());
+    var dateTemp = '';
+
+    if (propTemp.status == 1) {
+      dateTemp = new Date(propTemp.deposit_end_time);
+      setEndDate(
+        <Box fontSize="6xl">
+          <Countdown date={dateTemp.valueOf()}>
+            <Completionist />
+          </Countdown>
+        </Box>
+      );
+      console.log(dateTemp.valueOf(), Date.now());
+      setEndDateLocale(dateTemp.toLocaleString());
+    }
+    else {
+      dateTemp = new Date(propTemp.voting_end_time);
+      setEndDate(
+        <Text fontSize="6xl">
+          <Countdown date={dateTemp.valueOf()}>
+            <Completionist />
+          </Countdown>
+        </Text>
+      );
+      console.log(dateTemp.valueOf(), Date.now());
+      setEndDateLocale(dateTemp.toLocaleString());
+    }
+
+    // console.log(dateTemp.toDateString(), dateTemp.toLocaleString(), dateTemp.toUTCString(), dateTemp.toTimeString());
 
   }
 
@@ -239,10 +284,19 @@ export default function Home() {
 
             <Box textAlign="center">
 
-              {/*<Countdown date={Date.now() + 500000000}>
-                <Completionist />
-              </Countdown>*/}
-              <Button colorScheme='blue'>Vote Now</Button>
+              <Stack
+                h="md"
+                minH={36}
+                p={5}
+                spacing={2.5}
+                justifyContent="center"
+                borderRadius={5}
+                boxShadow={getBoxShadow}
+              >
+                {endDate}
+                <Text fontSize="2xl">{endDateLocale}</Text>
+                <Button colorScheme='blue'>Vote Now</Button>
+              </Stack>
 
             </Box>
 
