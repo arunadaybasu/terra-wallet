@@ -130,10 +130,10 @@ export default function Home() {
         // const voteYesPercent = ((voteYes / voteTotal) * 100);
         // console.log('Yes %: ' + voteYesPercent);
 
-        // const govPropTallyParams = await terra.gov.tallyParameters(propIdTemp, {});
-        // const govQuorum = parseFloat(govPropTallyParams.quorum);
-        // const govThreshold = parseFloat(govPropTallyParams.threshold);
-        // const govVetoThreshold = parseFloat(govPropTallyParams.veto_threshold);
+        const govPropTallyParams = await terra.gov.tallyParameters(propIdTemp, {});
+        const govQuorum = parseFloat(govPropTallyParams.quorum);
+        const govThreshold = parseFloat(govPropTallyParams.threshold);
+        const govVetoThreshold = parseFloat(govPropTallyParams.veto_threshold);
         // console.log(govQuorum, govThreshold, govVetoThreshold);
 
         const govPropParams = await terra.staking.pool({});
@@ -144,8 +144,19 @@ export default function Home() {
         // const nonBondedTokensPercent = ((nonBondedTokens / totalBondedTokens) * 100);
         // console.log('Total Staked Tokens: ' + totalStakedTokens);
 
-        const totalVoted = ((voteTotal / totalStakedTokens) * 100);
-        console.log('Total Voted: ' + totalVoted);
+        const totalVoted = (voteTotal / totalStakedTokens);
+        console.log('Total Votes: ' + totalVoted + ' >= ' + govQuorum);
+
+        const totalNoVeto = ( voteNoVeto / (voteYes + voteNo + voteNoVeto));
+        console.log('Total No Veto Votes: ' + totalNoVeto + ' < ' + govVetoThreshold);
+
+        const totalYes = ( voteYes / (voteYes + voteNo + voteNoVeto));
+        console.log('Total Yes Votes: ' + totalYes + ' > ' + govThreshold);
+
+        if ((totalVoted >= govQuorum) && (totalNoVeto < govVetoThreshold) && (totalYes > govThreshold))
+          console.log('PASSING');
+        else
+          console.log('NOT PASSING');
 
         return;
 
