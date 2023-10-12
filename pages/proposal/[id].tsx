@@ -109,29 +109,43 @@ export default function Home() {
         // const propTypeTemp = govProposalTemp.split(':')[2].split('"')[1].split('.')[3];
         // console.log('Proposal Type: ' + propTypes[propTypeTemp]);
 
-        // const voteAbstain = govProposal.final_tally_result.abstain;
+        const voteAbstain = parseFloat(govProposal.final_tally_result.abstain);
         // console.log('Abstain: ' + voteAbstain);
-        // const voteNo = govProposal.final_tally_result.no;
+        const voteNo = parseFloat(govProposal.final_tally_result.no);
         // console.log('No: ' + voteNo);
-        // const voteNoVeto = govProposal.final_tally_result.no_with_veto;
+        const voteNoVeto = parseFloat(govProposal.final_tally_result.no_with_veto);
         // console.log('No with Veto: ' + voteNoVeto);
-        // const voteYes = govProposal.final_tally_result.yes;
+        const voteYes = parseFloat(govProposal.final_tally_result.yes);
         // console.log('Yes: ' + voteYes);
 
-        // const voteTotal = parseInt(voteAbstain) + parseInt(voteNo) + parseInt(voteNoVeto) + parseInt(voteYes);
+        const voteTotal = voteAbstain + voteNo + voteNoVeto + voteYes;
         // console.log('Total: ' + voteTotal);
 
-        // const voteAbstainPercent = ((parseInt(voteAbstain) / voteTotal) * 100);
+        // const voteAbstainPercent = ((voteAbstain / voteTotal) * 100);
         // console.log('Abstain %: ' + voteAbstainPercent);
-        // const voteNoPercent = ((parseInt(voteNo) / voteTotal) * 100);
+        // const voteNoPercent = ((voteNo / voteTotal) * 100);
         // console.log('No %: ' + voteNoPercent);
-        // const voteNoVetoPercent = ((parseInt(voteNoVeto) / voteTotal) * 100);
+        // const voteNoVetoPercent = ((voteNoVeto / voteTotal) * 100);
         // console.log('No with Veto %: ' + voteNoVetoPercent);
-        // const voteYesPercent = ((parseInt(voteYes) / voteTotal) * 100);
+        // const voteYesPercent = ((voteYes / voteTotal) * 100);
         // console.log('Yes %: ' + voteYesPercent);
 
-        const govPropTallyParams = await terra.gov.tallyParameters(propIdTemp, {});
-        console.log(govPropTallyParams.quorum.toFixed(), govPropTallyParams.threshold.toFixed(), govPropTallyParams.veto_threshold.toFixed());
+        // const govPropTallyParams = await terra.gov.tallyParameters(propIdTemp, {});
+        // const govQuorum = parseFloat(govPropTallyParams.quorum);
+        // const govThreshold = parseFloat(govPropTallyParams.threshold);
+        // const govVetoThreshold = parseFloat(govPropTallyParams.veto_threshold);
+        // console.log(govQuorum, govThreshold, govVetoThreshold);
+
+        const govPropParams = await terra.staking.pool({});
+        const bondedTokens = parseFloat(govPropParams.bonded_tokens.amount);
+        const nonBondedTokens = parseFloat(govPropParams.not_bonded_tokens.amount);
+        const totalStakedTokens = bondedTokens + nonBondedTokens;
+        // const bondedTokensPercent = ((bondedTokens / totalBondedTokens) * 100);
+        // const nonBondedTokensPercent = ((nonBondedTokens / totalBondedTokens) * 100);
+        // console.log('Total Staked Tokens: ' + totalStakedTokens);
+
+        const totalVoted = ((voteTotal / totalStakedTokens) * 100);
+        console.log('Total Voted: ' + totalVoted);
 
         return;
 
@@ -214,9 +228,9 @@ export default function Home() {
 
             <Box textAlign="center">
 
-              <Countdown date={Date.now() + 500000000}>
+              {/*<Countdown date={Date.now() + 500000000}>
                 <Completionist />
-              </Countdown>
+              </Countdown>*/}
               <Button colorScheme='blue'>Vote Now</Button>
 
             </Box>
