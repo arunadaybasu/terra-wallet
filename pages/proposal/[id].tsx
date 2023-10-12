@@ -49,11 +49,17 @@ export default function Home() {
     'Declined',
     'Disallowed'
   ];
+  const propTypeNames = {
+    'TextProposal': 'Text Proposal',
+    'CommunityPoolSpendProposal': 'Community Pool Spend Proposal',
+    'ParameterChangeProposal': 'Parameter Change Proposal',
+    'SoftwareUpgradeProposal': 'Software Upgrade Proposal',
+  };
   const propTypes = {
-    'TextProposal': 'Text - does not need a Community Pool; generally used as a signalling proposal',
-    'CommunityPoolSpendProposal': 'Community Pool Spend - the Community Pool will be deducted for the mentioned amount; proposers generally discuss proposals on a discussion forum before a Community Pool spend',
-    'ParameterChangeProposal': 'Parameter Change - this proposal will change paramaters on the blockchain; proposers generally discuss proposals on a discussion forum before effecting a parameter change',
-    'SoftwareUpgradeProposal': 'Software Upgrade - this proposal will upgrade the current software version(s) of the blockchain; proposers generally discuss proposals on a discussion forum before effecting a blockchain software upgrade',
+    'TextProposal': 'Text Proposal - does not need a Community Pool; generally used as a signalling proposal',
+    'CommunityPoolSpendProposal': 'Community Pool Spend Proposal - the Community Pool will be deducted for the mentioned amount; proposers generally discuss proposals on a discussion forum before a Community Pool spend',
+    'ParameterChangeProposal': 'Parameter Change Proposal - this proposal will change paramaters on the blockchain; proposers generally discuss proposals on a discussion forum before effecting a parameter change',
+    'SoftwareUpgradeProposal': 'Software Upgrade Proposal - this proposal will upgrade the current software version(s) of the blockchain; proposers generally discuss proposals on a discussion forum before effecting a blockchain software upgrade',
   };
 
   const { colorMode, toggleColorMode } = useColorMode();
@@ -112,8 +118,25 @@ export default function Home() {
           </Box>
           <Text fontSize="xl">DEPOSIT END DATE</Text>
           <Text fontSize="2xl">{dateTemp.toLocaleString()}</Text>
+          <Button colorScheme="blue">Deposit Now</Button>
         </Stack>
       );
+    }
+    else if (propTemp.status == 2) {
+      dateTemp = new Date(propTemp.voting_end_time);
+      setEndDate(
+        <Stack>
+          <Box fontSize="6xl">
+            <Countdown date={dateTemp.valueOf()}>
+              <Completionist />
+            </Countdown>
+          </Box>
+          <Text fontSize="xl">VOTE ENDING DATE</Text>
+          <Text fontSize="2xl">{dateTemp.toLocaleString()}</Text>
+          <Button colorScheme="blue">Vote Now</Button>
+        </Stack>
+      );
+      console.log(dateTemp.valueOf(), Date.now());
     }
     else {
       dateTemp = new Date(propTemp.voting_end_time);
@@ -124,7 +147,7 @@ export default function Home() {
               <Completionist />
             </Countdown>
           </Box>
-          <Text fontSize="xl">VOTE END DATE</Text>
+          <Text fontSize="xl">VOTE ENDED DATE</Text>
           <Text fontSize="2xl">{dateTemp.toLocaleString()}</Text>
         </Stack>
       );
@@ -154,10 +177,11 @@ export default function Home() {
         setGovProp(govProposal);
         getProposalTimes(govProposal);
         console.log(govProposal);
+        // console.log(JSON.stringify(govProposal.content));
 
-        // const govProposalTemp = govProposal.toJSON();
-        // const propTypeTemp = govProposalTemp.split(':')[2].split('"')[1].split('.')[3];
-        // console.log('Proposal Type: ' + propTypes[propTypeTemp]);
+        const govProposalTemp = JSON.stringify(govProposal.content);
+        const propTypeTemp = govProposalTemp.split(':')[1].split('.')[3].split('\\')[0];
+        console.log(propTypes[propTypeTemp]);
 
         const voteAbstain = parseFloat(govProposal.final_tally_result.abstain);
         // console.log('Abstain: ' + voteAbstain);
@@ -263,7 +287,7 @@ export default function Home() {
 
         <Container maxW="5xl" py={10}>
 
-          <Box textAlign="left">
+          <Box textAlign="left" marginBottom="10">
             <Link href="/proposals" _hover={{ textDecoration: 'none' }}>
               <Button colorScheme='blue'>Back</Button>
             </Link>
@@ -299,7 +323,6 @@ export default function Home() {
                 boxShadow={getBoxShadow}
               >
                 {endDate}
-                <Button colorScheme='blue'>Vote Now</Button>
               </Stack>
 
             </Box>
