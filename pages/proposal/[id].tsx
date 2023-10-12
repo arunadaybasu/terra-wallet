@@ -104,26 +104,31 @@ export default function Home() {
     if (propTemp.status == 1) {
       dateTemp = new Date(propTemp.deposit_end_time);
       setEndDate(
-        <Box fontSize="6xl">
-          <Countdown date={dateTemp.valueOf()}>
-            <Completionist />
-          </Countdown>
-        </Box>
+        <Stack>
+          <Box fontSize="6xl">
+            <Countdown date={dateTemp.valueOf()}>
+              <Completionist />
+            </Countdown>
+          </Box>
+          <Text fontSize="xl">DEPOSIT END DATE</Text>
+          <Text fontSize="2xl">{dateTemp.toLocaleString()}</Text>
+        </Stack>
       );
-      console.log(dateTemp.valueOf(), Date.now());
-      setEndDateLocale(dateTemp.toLocaleString());
     }
     else {
       dateTemp = new Date(propTemp.voting_end_time);
       setEndDate(
-        <Text fontSize="6xl">
-          <Countdown date={dateTemp.valueOf()}>
-            <Completionist />
-          </Countdown>
-        </Text>
+        <Stack>
+          <Box fontSize="6xl">
+            <Countdown date={dateTemp.valueOf()}>
+              <Completionist />
+            </Countdown>
+          </Box>
+          <Text fontSize="xl">VOTE END DATE</Text>
+          <Text fontSize="2xl">{dateTemp.toLocaleString()}</Text>
+        </Stack>
       );
       console.log(dateTemp.valueOf(), Date.now());
-      setEndDateLocale(dateTemp.toLocaleString());
     }
 
     // console.log(dateTemp.toDateString(), dateTemp.toLocaleString(), dateTemp.toUTCString(), dateTemp.toTimeString());
@@ -294,7 +299,6 @@ export default function Home() {
                 boxShadow={getBoxShadow}
               >
                 {endDate}
-                <Text fontSize="2xl">{endDateLocale}</Text>
                 <Button colorScheme='blue'>Vote Now</Button>
               </Stack>
 
