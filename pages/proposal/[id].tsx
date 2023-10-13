@@ -52,6 +52,7 @@ export default function Home() {
   const [propThreshold, setPropThreshold] = useState('');
   const [govThresholdVeto, setGovThresholdVeto] = useState('');
   const [propThresholdVeto, setPropThresholdVeto] = useState('');
+  const [passingColor, setPassingColor] = useState('');
 
   const { colorMode, toggleColorMode } = useColorMode();
   const {
@@ -305,10 +306,14 @@ export default function Home() {
             console.log('Total No Veto Votes: ' + totalNoVeto + ' < ' + govThresholdVeto);
             setPropThresholdVeto(totalNoVeto);
 
-            if ((totalVoted >= govQuorum) && (totalNoVeto < govThresholdVeto) && (totalYes > govThreshold))
+            if ((totalVoted >= govQuorum) && (totalNoVeto < govThresholdVeto) && (totalYes > govThreshold)) {
               console.log('PASSING');
-            else
+              setPassingColor('green.500');
+            }
+            else {
               console.log('NOT PASSING');
+              setPassingColor('red.500');
+            }
 
             return;
 
@@ -394,8 +399,8 @@ export default function Home() {
                   marginBottom="10"
                 >
                   <Center>
-                    <CircularProgress size='200px' thickness='5px' value={govTotalVoted} color='green.400'>
-                      <CircularProgressLabel>{govTotalVoted}%</CircularProgressLabel>
+                    <CircularProgress size='200px' thickness='5px' value={govTotalVoted} color={passingColor}>
+                      <CircularProgressLabel fontSize="4xl">{govTotalVoted}%</CircularProgressLabel>
                     </CircularProgress>
                   </Center>
                   <Center>
