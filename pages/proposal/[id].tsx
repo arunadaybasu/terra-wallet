@@ -46,6 +46,12 @@ export default function Home() {
   const [endDateLocale, setEndDateLocale] = useState('');
   const [propType, setPropType] = useState('');
   const [govTotalVoted, setTotalVoted] = useState('');
+  const [propQuorum, setPropQuorum] = useState('');
+  const [govQuorum, setGovQuorum] = useState('');
+  const [govThreshold, setGovThreshold] = useState('');
+  const [propThreshold, setPropThreshold] = useState('');
+  const [govThresholdVeto, setGovThresholdVeto] = useState('');
+  const [propThresholdVeto, setPropThresholdVeto] = useState('');
 
   const { colorMode, toggleColorMode } = useColorMode();
   const {
@@ -80,6 +86,63 @@ export default function Home() {
     return (
       <Text fontSize="4xl">Voting has Ended</Text>
     );
+
+  }
+
+  const QuorumMsg = () => {
+
+    if (propQuorum >= govQuorum)
+      return (
+        <ListItem>
+          <ListIcon as={CheckIcon} color='green.500' />
+          {govTotalVoted}% Stakers voting is MORE than Quorum of {govQuorum*100}%
+        </ListItem>
+      );
+    else
+      return (
+        <ListItem>
+          <ListIcon as={SmallCloseIcon} color='red.500' />
+          {govTotalVoted}% Stakers voting is LESS than Quorum of {govQuorum*100}%
+        </ListItem>
+      );
+
+  }
+
+  const ThresholdMsg = () => {
+
+    if (propThreshold > govThreshold)
+      return (
+        <ListItem>
+          <ListIcon as={CheckIcon} color='green.500' />
+          {(propThreshold*100).toFixed(2)}% Yes votes is MORE than Threshold of {govThreshold*100}%
+        </ListItem>
+      );
+    else
+      return (
+        <ListItem>
+          <ListIcon as={SmallCloseIcon} color='red.500' />
+          {(propThreshold*100).toFixed(2)}% Yes votes is LESS than Threshold of {govThreshold*100}%
+        </ListItem>
+      );
+
+  }
+
+  const ThresholdVetoMsg = () => {
+
+    if (propThresholdVeto < govThresholdVeto)
+      return (
+        <ListItem>
+          <ListIcon as={CheckIcon} color='green.500' />
+          {(propThresholdVeto*100).toFixed(2)}% No with Veto votes is LESS than Veto Threshold of {govThresholdVeto*100}%
+        </ListItem>
+      );
+    else
+      return (
+        <ListItem>
+          <ListIcon as={SmallCloseIcon} color='red.500' />
+          {(propThresholdVeto*100).toFixed(2)}% No with Veto votes is MORE than Veto Threshold of {govThresholdVeto*100}%
+        </ListItem>
+      );
 
   }
 
@@ -210,10 +273,15 @@ export default function Home() {
             // console.log('Yes %: ' + voteYesPercent);
 
             const govPropTallyParams = await terra.gov.tallyParameters(propIdTemp, {});
+            
             const govQuorum = parseFloat(govPropTallyParams.quorum);
+            setGovQuorum(govQuorum);
             const govThreshold = parseFloat(govPropTallyParams.threshold);
-            const govVetoThreshold = parseFloat(govPropTallyParams.veto_threshold);
-            console.log(govQuorum, govThreshold, govVetoThreshold);
+            setGovThreshold(govThreshold);
+            const govThresholdVeto = parseFloat(govPropTallyParams.veto_threshold);
+            setGovThresholdVeto(govThresholdVeto);
+
+            console.log(govQuorum, govThreshold, govThresholdVeto);
 
             const govPropParams = await terra.staking.pool({});
             const bondedTokens = parseFloat(govPropParams.bonded_tokens.amount);
@@ -227,14 +295,17 @@ export default function Home() {
             const totalVotedTemp = (totalVoted * 100).toFixed(2);
             console.log('Total Votes: ' + totalVoted + ' >= ' + govQuorum);
             setTotalVoted(totalVotedTemp);
-
-            const totalNoVeto = ( voteNoVeto / (voteYes + voteNo + voteNoVeto));
-            console.log('Total No Veto Votes: ' + totalNoVeto + ' < ' + govVetoThreshold);
+            setPropQuorum(totalVoted);
 
             const totalYes = ( voteYes / (voteYes + voteNo + voteNoVeto));
             console.log('Total Yes Votes: ' + totalYes + ' > ' + govThreshold);
+            setPropThreshold(totalYes);
 
-            if ((totalVoted >= govQuorum) && (totalNoVeto < govVetoThreshold) && (totalYes > govThreshold))
+            const totalNoVeto = ( voteNoVeto / (voteYes + voteNo + voteNoVeto));
+            console.log('Total No Veto Votes: ' + totalNoVeto + ' < ' + govThresholdVeto);
+            setPropThresholdVeto(totalNoVeto);
+
+            if ((totalVoted >= govQuorum) && (totalNoVeto < govThresholdVeto) && (totalYes > govThreshold))
               console.log('PASSING');
             else
               console.log('NOT PASSING');
@@ -329,23 +400,9 @@ export default function Home() {
                   </Center>
                   <Center>
                     <List spacing={3}>
-                      <ListItem>
-                        <ListIcon as={CheckIcon} color='green.500' />
-                        {govTotalVoted}% of All Stakers have Voted
-                      </ListItem>
-                      <ListItem>
-                        <ListIcon as={CheckIcon} color='green.500' />
-                        Assumenda, quia temporibus eveniet a libero incidunt suscipit
-                      </ListItem>
-                      <ListItem>
-                        <ListIcon as={CheckIcon} color='green.500' />
-                        Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-                      </ListItem>
-                      {/* You can also use custom icons from react-icons */}
-                      <ListItem>
-                        <ListIcon as={SmallCloseIcon} color='green.500' />
-                        Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-                      </ListItem>
+                      <QuorumMsg />
+                      <ThresholdMsg />
+                      <ThresholdVetoMsg />
                     </List>
                   </Center>
                 </SimpleGrid>
