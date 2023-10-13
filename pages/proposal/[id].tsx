@@ -8,12 +8,15 @@ import { useChain, useManager } from '@cosmos-kit/react';
 import { chainName } from '../../config';
 import {
   useColorMode, useColorModeValue,
-  Container, Grid, SimpleGrid, VStack, Flex, Box, Stack,
+  Container, Grid, SimpleGrid, VStack, Flex, Box, Stack, Center,
   Heading, Divider, StackDivider, Icon,
   Text, Link,
   Button,
   Card, CardHeader, CardBody, CardFooter,
+  Progress, CircularProgress, CircularProgressLabel,
+  List, ListItem, ListIcon
 } from '@chakra-ui/react';
+import { CheckIcon, SmallCloseIcon } from '@chakra-ui/icons';
 
 import { BsFillMoonStarsFill, BsFillSunFill } from 'react-icons/bs';
 import Countdown from "react-countdown";
@@ -39,9 +42,10 @@ export default function Home() {
     voting_end_time: '',
     voting_start_time: ''
   });
-  const [endDate, setEndDate] = useState('');
+  const [endDate, setEndDate] = useState(<></>);
   const [endDateLocale, setEndDateLocale] = useState('');
   const [propType, setPropType] = useState('');
+  const [govTotalVoted, setTotalVoted] = useState('');
 
   const { colorMode, toggleColorMode } = useColorMode();
   const {
@@ -102,12 +106,10 @@ export default function Home() {
         'SoftwareUpgradeProposal': 'Software Upgrade Proposal: This proposal will upgrade the current software version(s) of the blockchain. Proposers generally discuss proposals on a discussion forum before effecting a blockchain software upgrade',
       };
 
-      function getProposalTimes(propTemp) {
-
-        var dateTemp = '';
+      function getProposalTimes(propTemp: any) {
 
         if (propTemp.status == 1) {
-          dateTemp = new Date(propTemp.deposit_end_time);
+          const dateTemp = new Date(propTemp.deposit_end_time);
           setEndDate(
             <Stack>
               <Box fontSize="6xl">
@@ -122,7 +124,7 @@ export default function Home() {
           );
         }
         else if (propTemp.status == 2) {
-          dateTemp = new Date(propTemp.voting_end_time);
+          const dateTemp = new Date(propTemp.voting_end_time);
           setEndDate(
             <Stack>
               <Box fontSize="6xl">
@@ -138,7 +140,7 @@ export default function Home() {
           console.log(dateTemp.valueOf(), Date.now());
         }
         else {
-          dateTemp = new Date(propTemp.voting_end_time);
+          const dateTemp = new Date(propTemp.voting_end_time);
           setEndDate(
             <Stack>
               <Box fontSize="6xl">
@@ -157,7 +159,7 @@ export default function Home() {
 
       }
 
-      async function getProposal(propIdTemp) {
+      async function getProposal(propIdTemp: any) {
 
         console.log(propIdTemp);
 
@@ -183,17 +185,20 @@ export default function Home() {
             setPropType(propTypes[propTypeTemp]);
             console.log(propTypes[propTypeTemp]);
 
-            const voteAbstain = parseFloat(govProposal.final_tally_result.abstain);
-            // console.log('Abstain: ' + voteAbstain);
-            const voteNo = parseFloat(govProposal.final_tally_result.no);
-            // console.log('No: ' + voteNo);
-            const voteNoVeto = parseFloat(govProposal.final_tally_result.no_with_veto);
-            // console.log('No with Veto: ' + voteNoVeto);
-            const voteYes = parseFloat(govProposal.final_tally_result.yes);
-            // console.log('Yes: ' + voteYes);
+            const govProposalTally = await terra.gov.tally(propIdTemp, {});
+            console.log(govProposalTally);
+
+            const voteAbstain = parseFloat(govProposalTally.abstain);
+            console.log('Abstain: ' + voteAbstain);
+            const voteNo = parseFloat(govProposalTally.no);
+            console.log('No: ' + voteNo);
+            const voteNoVeto = parseFloat(govProposalTally.no_with_veto);
+            console.log('No with Veto: ' + voteNoVeto);
+            const voteYes = parseFloat(govProposalTally.yes);
+            console.log('Yes: ' + voteYes);
 
             const voteTotal = voteAbstain + voteNo + voteNoVeto + voteYes;
-            // console.log('Total: ' + voteTotal);
+            console.log('Total: ' + voteTotal);
 
             // const voteAbstainPercent = ((voteAbstain / voteTotal) * 100);
             // console.log('Abstain %: ' + voteAbstainPercent);
@@ -208,7 +213,7 @@ export default function Home() {
             const govQuorum = parseFloat(govPropTallyParams.quorum);
             const govThreshold = parseFloat(govPropTallyParams.threshold);
             const govVetoThreshold = parseFloat(govPropTallyParams.veto_threshold);
-            // console.log(govQuorum, govThreshold, govVetoThreshold);
+            console.log(govQuorum, govThreshold, govVetoThreshold);
 
             const govPropParams = await terra.staking.pool({});
             const bondedTokens = parseFloat(govPropParams.bonded_tokens.amount);
@@ -219,7 +224,9 @@ export default function Home() {
             // console.log('Total Staked Tokens: ' + totalStakedTokens);
 
             const totalVoted = (voteTotal / totalStakedTokens);
+            const totalVotedTemp = (totalVoted * 100).toFixed(2);
             console.log('Total Votes: ' + totalVoted + ' >= ' + govQuorum);
+            setTotalVoted(totalVotedTemp);
 
             const totalNoVeto = ( voteNoVeto / (voteYes + voteNo + voteNoVeto));
             console.log('Total No Veto Votes: ' + totalNoVeto + ' < ' + govVetoThreshold);
@@ -258,6 +265,7 @@ export default function Home() {
 
   return (
       <VStack spacing={4} align='stretch'>
+
         <Head>
           <title>Terra Luna Classic Wallet</title>
           <meta name="description" content="Community Wallet for Terra Luna Classic" />
@@ -283,25 +291,70 @@ export default function Home() {
           
         </SimpleGrid>
 
-        <Container maxW="5xl" py={10}>
+        <Container maxW="6xl" py={10}>
 
           <Box textAlign="left" marginBottom="10">
+
             <Link href="/proposals" _hover={{ textDecoration: 'none' }}>
-              <Button colorScheme='blue'>Back</Button>
+              <Button colorScheme='blue' marginBottom="10">Back</Button>
             </Link>
+
+            <Heading as="h1" fontSize="2xl">
+              {govProp.content.title.charAt(0).toUpperCase() + govProp.content.title.slice(1).toLowerCase()}
+            </Heading>
+
           </Box>
 
-          <SimpleGrid columns={2} spacing={10}>
+          <SimpleGrid columns={2} spacing={10} marginBottom="10">
 
             <Box textAlign="left">
 
-              <Text fontSize='2xl'>
-                {govProp.content.title}
-              </Text>
-
-              <Text fontSize='lg'>
-                {govProp.content.description}
-              </Text>
+              <Stack
+                h="md"
+                minH={36}
+                p={5}
+                justifyContent="center"
+                borderRadius={5}
+                boxShadow={getBoxShadow}
+              >
+                <SimpleGrid
+                  columns={2}
+                  spacing={0}
+                  marginBottom="10"
+                >
+                  <Center>
+                    <CircularProgress size='200px' thickness='5px' value={govTotalVoted} color='green.400'>
+                      <CircularProgressLabel>{govTotalVoted}%</CircularProgressLabel>
+                    </CircularProgress>
+                  </Center>
+                  <Center>
+                    <List spacing={3}>
+                      <ListItem>
+                        <ListIcon as={CheckIcon} color='green.500' />
+                        {govTotalVoted}% of All Stakers have Voted
+                      </ListItem>
+                      <ListItem>
+                        <ListIcon as={CheckIcon} color='green.500' />
+                        Assumenda, quia temporibus eveniet a libero incidunt suscipit
+                      </ListItem>
+                      <ListItem>
+                        <ListIcon as={CheckIcon} color='green.500' />
+                        Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
+                      </ListItem>
+                      {/* You can also use custom icons from react-icons */}
+                      <ListItem>
+                        <ListIcon as={SmallCloseIcon} color='green.500' />
+                        Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
+                      </ListItem>
+                    </List>
+                  </Center>
+                </SimpleGrid>
+                <Progress colorScheme='green' size='sm' value={20} />
+                <Progress colorScheme='green' size='md' value={20} />
+                <Progress colorScheme='green' size='lg' value={20} />
+                <Progress colorScheme='green' height='32px' value={20} />
+                
+              </Stack>
 
             </Box>
 
@@ -329,11 +382,23 @@ export default function Home() {
 
           </SimpleGrid>
 
-        </Container>
+          <Box mb={3} marginBottom="10">
+            <Divider />
+          </Box>
 
-        <Box mb={3}>
-          <Divider />
-        </Box>
+          <Box textAlign="justify" marginBottom="10">
+
+            <Text fontSize='lg'>
+              {govProp.content.description}
+            </Text>
+
+          </Box>
+
+          <Box mb={3}>
+            <Divider />
+          </Box>
+
+        </Container>
 
       </VStack>
   );

@@ -79,8 +79,8 @@ export default function Home() {
         'pagination.limit': '100',
         'pagination.offset': '0',
         'pagination.key': '',
-        'pagination.count_total': 'true',
-        'pagination.reverse': 'true'
+        'pagination.count_total': true,
+        'pagination.reverse': true
       };
 
       const govProposals = await terra.gov.proposals(paginationOptions);
